@@ -7,7 +7,6 @@ import { Titulo } from './componentes/Titulo';
 import { secoes } from './utils/CadastroEntradaTexto';
 import { cadastrarPaciente } from './servicos/PacienteServico';
 
-
 export default function Cadastro({ navigation }: any) {
   const [numSecao, setNumSecao] = useState(0);
   const [dados, setDados] = useState({} as any);
@@ -15,25 +14,15 @@ export default function Cadastro({ navigation }: any) {
   const toast = useToast()
 
   function avancarSecao(){
-    if(todosCamposPreenchidos()){
-
-   
     if(numSecao < secoes.length - 1){
       setNumSecao(numSecao+1)
     }
     else{
       console.log(dados)
       console.log(planos)
-      cadastrar();
+      cadastrar()
     }
-  }else {
-    toast.show({
-      title: 'Erro',
-      description: 'por favor, preencha todos os campos',
-      backgroundColor: 'red.500',
-    })
   }
-}
 
   function voltarSecao(){
     if(numSecao > 0){
@@ -44,16 +33,6 @@ export default function Cadastro({ navigation }: any) {
   function atualizarDados(id: string, valor: string){
     setDados({...dados, [id]: valor})
   }
-  function todosCamposPreenchidos(){
-    const campos = secoes[numSecao]?.entradaTexto || [];
-    for (const campo of campos){
-      if(!dados[campo.name]){
-        return false;
-      }
-    }
-    return true;
-  }
-
 
   async function cadastrar(){
     const resultado = await cadastrarPaciente({
@@ -73,31 +52,22 @@ export default function Cadastro({ navigation }: any) {
       planosSaude: planos,
       imagem: dados.imagem
     })
-  
 
-    if (resultado != ''&& planos.length >0 ){
+    if (resultado) {
       toast.show({
         title: 'Cadastro realizado com sucesso',
         description: 'Você já pode fazer login',
         backgroundColor: 'green.500',
-      
       })
       navigation.replace('Login');
-    
-    }else   {
+    }
+    else {
       toast.show({
-        title: 'error',
-        description: 'Preencha todos os campos',
+        title: 'Erro ao cadastrar',
+        description: 'Verifique os dados e tente novamente',
         backgroundColor: 'red.500',
       })
-    
     }
-  
-    
-    
-    
-    
-   
   }
 
   return (
@@ -116,7 +86,7 @@ export default function Cadastro({ navigation }: any) {
                 placeholder={entrada.placeholder} 
                 key={entrada.id} 
                 secureTextEntry={entrada.secureTextEntry}
-                value={dados[entrada.name] || ''}
+                value={dados[entrada.name]}
                 onChangeText={(text) => atualizarDados(entrada.name, text)}
               />
             )
